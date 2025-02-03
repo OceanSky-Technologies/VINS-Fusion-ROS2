@@ -134,8 +134,8 @@ class AngleLocalParameterization {
     return true;
   }
 
-  static ceres::LocalParameterization* Create() {
-    return (new ceres::AutoDiffLocalParameterization<AngleLocalParameterization,
+  static ceres::Manifold* Create() {
+    return (new ceres::AutoDiffManifold<AngleLocalParameterization,
                                                      1, 1>);
   }
 };

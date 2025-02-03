@@ -36,7 +36,7 @@ bash realsense_install.sh
 cd $(PATH_TO_YOUR_ROS2_WS)/src
 git clone https://github.com/zinuok/VINS-Fusion-ROS2
 cd ..
-colcon build --symlink-install && source ./install/setup.bash && source ./install/local_setup.bash
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release && source ./install/setup.bash && source ./install/local_setup.bash
 ```
 
 ### run

@@ -18,6 +18,7 @@
 #include "camodocal/camera_models/CostFunctionFactory.h"
 
 #include "ceres/ceres.h"
+
 namespace camodocal
 {
 
@@ -504,10 +505,9 @@ CameraCalibration::optimize(CameraPtr& camera,
                                      transformVec.at(i).translationData());
         }
 
-        ceres::Manifold* manifold =
-            new QuaternionManifold;
+        ceres::Manifold* manifold = new ceres::QuaternionManifold;
 
-        problem.SetParameterization(transformVec.at(i).rotationData(),
+        problem.SetManifold(transformVec.at(i).rotationData(), // HERE
                                     manifold);
     }
 

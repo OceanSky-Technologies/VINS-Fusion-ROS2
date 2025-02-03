@@ -114,7 +114,7 @@ void GlobalOptimization::optimize()
             ceres::Solver::Summary summary;
             ceres::LossFunction *loss_function;
             loss_function = new ceres::HuberLoss(1.0);
-            ceres::LocalParameterization* local_parameterization = new ceres::QuaternionParameterization();
+            ceres::Manifold* manifold = new ceres::QuaternionParameterization();
 
             //add param
             mPoseMap.lock();
@@ -133,7 +133,7 @@ void GlobalOptimization::optimize()
                 q_array[i][1] = iter->second[4];
                 q_array[i][2] = iter->second[5];
                 q_array[i][3] = iter->second[6];
-                problem.AddParameterBlock(q_array[i], 4, local_parameterization);
+                problem.AddParameterBlock(q_array[i], 4, manifold);
                 problem.AddParameterBlock(t_array[i], 3);
             }
 

@@ -41,11 +41,9 @@ colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release && source
 
 ### run
 ```bash
-# vins
-ros2 run vins $(PATH_TO_YOUR_VINS_CONFIG_FILE)
-
-# Rviz2 visualization
-ros2 launch vins vins_rviz.launch.xml
+ros2 launch vins vins_rviz.launch.xml &
+ros2 run vins vins_node ./config/euroc/euroc_mono_imu_config.yaml &
+ros2 run loop_fusion loop_fusion_node ./config/euroc/euroc_mono_imu_config.yaml &
 
 # Use the "world" frame
 ```
@@ -57,13 +55,14 @@ This is because the filesystem structure for bag file has been changed significa
 The bag file at ROS2 needs the folder with some meta data for each bag file, which is done using following commands.
 - you have to install [this pkg](https://gitlab.com/ternaris/rosbags)
 ```bash
-pip install rosbags
+sudo apt install pipx
+pipx install rosbags
 ```
 
 - run
 ```bash
 export PATH=$PATH:~/.local/bin
-rosbags-convert foo.bag --dst /path/to/bar
+rosbags-convert --src foo.bag --dst /path/to/bar
 ```
 
 

@@ -46,6 +46,8 @@ ros2 run vins $(PATH_TO_YOUR_VINS_CONFIG_FILE)
 
 # Rviz2 visualization
 ros2 launch vins vins_rviz.launch.xml
+
+# Use the "world" frame
 ```
 
 

@@ -114,7 +114,7 @@ void GlobalOptimization::optimize()
             ceres::Solver::Summary summary;
             ceres::LossFunction *loss_function;
             loss_function = new ceres::HuberLoss(1.0);
-            ceres::Manifold* manifold = new ceres::QuaternionParameterization();
+            ceres::Manifold* manifold = new ceres::QuaternionManifold();
 
             //add param
             mPoseMap.lock();

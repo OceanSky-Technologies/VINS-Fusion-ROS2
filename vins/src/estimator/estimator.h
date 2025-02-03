@@ -29,7 +29,7 @@
 #include "../initial/initial_alignment.h"
 #include "../initial/initial_ex_rotation.h"
 #include "../factor/imu_factor.h"
-#include "../factor/pose_local_parameterization.h"
+#include "../factor/pose_manifold.h"
 #include "../factor/marginalization_factor.h"
 #include "../factor/projectionTwoFrameOneCamFactor.h"
 #include "../factor/projectionTwoFrameTwoCamFactor.h"

@@ -1068,8 +1068,8 @@ void Estimator::optimization()
     //ceres::LossFunction* loss_function = new ceres::HuberLoss(1.0);
     for (int i = 0; i < frame_count + 1; i++)
     {
-        ceres::LocalParameterization *local_parameterization = new PoseLocalParameterization();
-        problem.AddParameterBlock(para_Pose[i], SIZE_POSE, local_parameterization);
+        ceres::Manifold *manifold = new PoseManifold();
+        problem.AddParameterBlock(para_Pose[i], SIZE_POSE, manifold);
         if(USE_IMU)
             problem.AddParameterBlock(para_SpeedBias[i], SIZE_SPEEDBIAS);
     }
@@ -1078,8 +1078,8 @@ void Estimator::optimization()
 
     for (int i = 0; i < NUM_OF_CAM; i++)
     {
-        ceres::LocalParameterization *local_parameterization = new PoseLocalParameterization();
-        problem.AddParameterBlock(para_Ex_Pose[i], SIZE_POSE, local_parameterization);
+        ceres::Manifold *manifold = new PoseManifold();
+        problem.AddParameterBlock(para_Ex_Pose[i], SIZE_POSE, manifold);
         if ((ESTIMATE_EXTRINSIC && frame_count == WINDOW_SIZE && Vs[0].norm() > 0.2) || openExEstimation)
         {
             //ROS_INFO("estimate extinsic param");

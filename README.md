@@ -2,6 +2,8 @@
 
 ## ROS2 version of VINS-Fusion.
 
+This is a fork of https://github.com/zinuok/VINS-Fusion-ROS2 that updates it to ROS2 humble.
+
 ### Notices
 - code has been updated so that the vins package can be executed via ros2 run or ros2 launch
 - but Rviz config cannot be saved due to some issue.. still fixing

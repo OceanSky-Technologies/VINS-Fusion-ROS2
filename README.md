@@ -1,10 +1,17 @@
-# VINS-Fusion
-
-## RPI / ROS2 version of VINS-Fusion.
+# VINS-Fusion-No-GPS
 
 This is a fork of https://github.com/zinuok/VINS-Fusion-ROS2.
 
-It runs on a Raspberry Pi 5 using the Global Shutter camera, BMI088 IMU and a RS485 CAN HAT.
+Concept: Feed camera and IMU data to VINS-Fusion running on Raspberry Pi, interpolate GPS coordinates and send "fake" GPS coordinates using Drone-CAN.
+
+Hardwar required:
+- [Raspberry Pi Global Shutter camera](https://www.raspberrypi.com/products/raspberry-pi-global-shutter-camera/)
+- [2.1 mm lens](https://www.amazon.de/dp/B0CVVWSPZF?ref=ppx_yo2ov_dt_b_fed_asin_title)
+- [BMI088 IMU board](https://wiki.seeedstudio.com/Grove-6-Axis_Accelerometer&Gyroscope_BMI088/)
+- [RS485 CAN HAT](https://www.berrybase.de/rs485-can-hat-fuer-raspberry-pi)
+- [9-36V -> 5V / 5A DC/DC converter for battery power supply](https://www.berrybase.de/netzteilmodul-9-36v-5v-5a-mit-usb-ausgang-und-schraubklemmen)
+
+Before you ask: no, it's not finished yet.
 
 ## Setup
 
@@ -35,9 +42,9 @@ make build
 
 For running on a Jetson board open `feature_tracker.h` and uncomment
 
-  ```bash
-  #define GPU_MODE 1
-  ```
+```bash
+#define GPU_MODE 1
+```
 
 ### run with loop fusion
 
@@ -49,25 +56,18 @@ docker run \
   -v $(git rev-parse --show-toplevel):/root/catkin_ws/src/VINS-Fusion/ \
   ros:vins-fusion \
   /bin/bash -c \
-  "cd /root/catkin_ws/; \
-  catkin config \
-          --env-cache \
-          --extend /opt/ros/$ROS_DISTRO \
-      --cmake-args \
-          -DCMAKE_BUILD_TYPE=Release; \
-      catkin build; \
-      source devel/setup.bash; \
-      rosrun loop_fusion loop_fusion_node ${CONFIG_IN_DOCKER} & \
-      rosrun vins kitti_odom_test ${CONFIG_IN_DOCKER} /root/kitti_dataset/"
-
+  "cd /root/workspace/; \
+  colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release; \
+  source ./install/setup.bash; \
+  ros2 run loop_fusion loop_fusion_node ${CONFIG_IN_DOCKER} & \
+  ros2 run vins kitti_odom_test ${CONFIG_IN_DOCKER} /root/kitti_dataset/"
 
 ros2 launch vins vins_rviz.launch.xml &
 ros2 run vins vins_node ./config/euroc/euroc_mono_imu_config.yaml &
 ros2 run loop_fusion loop_fusion_node ./config/euroc/euroc_mono_imu_config.yaml &
 
-# Use the "world" frame
+# Use the "world" frame in rviz
 ```
-
 
 ## play bag recorded at ROS1
 Unfortunately, you can't just play back the bag file recorded at ROS1. 

@@ -21,6 +21,7 @@ RUN wget https://github.com/opencv/opencv/archive/refs/tags/$OPENCV_VERSION.tar.
             .. \
       && cmake --build . -j $(nproc) --target install
 
+# ceres
 RUN apt update \
       && apt install -y libgoogle-glog-dev libgflags-dev libatlas-base-dev \
       && rm -rf /var/lib/apt/lists/*
@@ -38,5 +39,5 @@ RUN apt update \
       && rm -rf /var/lib/apt/lists/*
 
 RUN apt update \
-      && apt install -y ros-humble-cv-bridge ros-humble-image-transport ros-humble-image-tools ros-humble-v4l2-camera ros-humble-image-transport-plugins v4l-utils \
+      && apt install -y ros-humble-cv-bridge ros-humble-image-transport ros-humble-image-tools ros-humble-v4l2-camera ros-humble-image-transport-plugins v4l-utils ros-humble-gscam ros-humble-desktop \
       && rm -rf /var/lib/apt/lists/*

@@ -4,9 +4,7 @@ ENV CERES_VERSION="1.12.0"
 ENV CATKIN_WS=/root/catkin_ws
 
       # set up thread number for building
-RUN   if [ "x$(nproc)" = "x1" ] ; then export USE_PROC=1 ; \
-      else export USE_PROC=$(($(nproc)/2)) ; fi && \
-      apt-get update && apt-get install -y \
+RUN   apt-get update && apt-get install -y \
       cmake \
       libatlas-base-dev \
       libeigen3-dev \
@@ -24,7 +22,7 @@ RUN   if [ "x$(nproc)" = "x1" ] ; then export USE_PROC=1 ; \
       git checkout tags/${CERES_VERSION} && \
       mkdir build && cd build && \
       cmake .. && \
-      make -j$(USE_PROC) install && \
+      make -j 4 install && \
       rm -rf ../../ceres-solver && \
       mkdir -p $CATKIN_WS/src/VINS-Fusion/
 

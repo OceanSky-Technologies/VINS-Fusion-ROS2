@@ -67,6 +67,7 @@ docker run \
   --privileged \
   -v $HOME/.Xauthority:/home/root/.Xauthority \
   -v $(git rev-parse --show-toplevel)/../..:/root/workspace/ \
+  -v $(git rev-parse --show-toplevel)/camera.yaml:/root/.ros/camera_info/camera.yaml \
   --name vins-fusion \
   ros:vins-fusion \
   /bin/bash -c \

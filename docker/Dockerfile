@@ -41,3 +41,5 @@ RUN apt update \
 RUN apt update \
       && apt install -y ros-humble-cv-bridge ros-humble-image-transport ros-humble-image-tools ros-humble-v4l2-camera ros-humble-image-transport-plugins v4l-utils ros-humble-gscam ros-humble-desktop \
       && rm -rf /var/lib/apt/lists/*
+
+RUN xhost +

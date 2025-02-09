@@ -11,12 +11,12 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <opencv2/opencv.h>
+#include <opencv2/opencv.hpp>
 #include <cmath>
 #include <string>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
-#include <cv_bridge/cv_bridge.hpp>
+#include <cv_bridge/cv_bridge.h>
 #include "estimator/estimator.h"
 #include "utility/visualization.h"
 

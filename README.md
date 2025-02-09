@@ -4,6 +4,10 @@ This is a fork of https://github.com/zinuok/VINS-Fusion-ROS2.
 
 Concept: Feed camera and IMU data to VINS-Fusion running on Raspberry Pi, interpolate GPS coordinates and send "fake" GPS coordinates using Drone-CAN.
 
+VINS-Fusion is the best mono camera algorithm according to the [KITTI Visual Odometry / SLAM Evaluation](https://www.cvlibs.net/datasets/kitti/eval_odometry.php).
+
+The IMU data helps out in situations where the camera tracking is lost, i.e. during quick movements.
+
 Hardware required:
 - [Raspberry Pi Global Shutter camera](https://www.raspberrypi.com/products/raspberry-pi-global-shutter-camera/) with [2.1 mm lens](https://www.amazon.de/dp/B0CVVWSPZF)
 - [BMI088 IMU board](https://wiki.seeedstudio.com/Grove-6-Axis_Accelerometer)
@@ -11,6 +15,10 @@ Hardware required:
 - [9-36V -> 5V / 5A DC/DC converter for battery power supply](https://www.berrybase.de/netzteilmodul-9-36v-5v-5a-mit-usb-ausgang-und-schraubklemmen)
 
 Before you ask: no, it's not finished yet.
+
+![alt text](image.png)
+
+![alt text](image-1.png)
 
 ## Setup
 

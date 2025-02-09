@@ -30,3 +30,7 @@ RUN wget http://ceres-solver.org/ceres-solver-$CERES_SOLVER_VERSION.tar.gz \
       && mkdir build && cd build \
       && cmake .. \
       && cmake --build . -j $(nproc) --target install
+
+RUN apt update \
+      && apt install -y libboost-all-dev \
+      && rm -rf /var/lib/apt/lists/*

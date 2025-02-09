@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <opencv2/opencv.hpp>
+#include <opencv2/opencv.h>
 #include <cmath>
 #include <string>
 #include <rclcpp/rclcpp.hpp>

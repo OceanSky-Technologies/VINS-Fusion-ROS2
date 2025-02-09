@@ -14,7 +14,11 @@ RUN wget https://github.com/opencv/opencv/archive/refs/tags/$OPENCV_VERSION.tar.
       && tar -xf $OPENCV_VERSION.tar.gz && rm $OPENCV_VERSION.tar.gz \
       && cd opencv-$OPENCV_VERSION \
       && mkdir build && cd build \
-      && cmake -DWITH_VULKAN=ON .. \
+      && cmake -DWITH_VULKAN=ON \
+            -DBUILD_TESTS=OFF \
+            -DBUILD_PERF_TESTS=OFF \
+            -DBUILD_EXAMPLES=OFF \
+            .. \
       && cmake --build . -j $(nproc) --target install
 
 RUN apt update \
@@ -34,5 +38,5 @@ RUN apt update \
       && rm -rf /var/lib/apt/lists/*
 
 RUN apt update \
-      && apt install -y ros-humble-cv-bridge \
+      && apt install -y ros-humble-cv-bridge ros-humble-image-transport ros-humble-image-tools ros-humble-v4l2-camera ros-humble-image-transport-plugins v4l-utils \
       && rm -rf /var/lib/apt/lists/*

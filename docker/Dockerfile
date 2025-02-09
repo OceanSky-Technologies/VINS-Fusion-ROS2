@@ -32,3 +32,7 @@ RUN wget http://ceres-solver.org/ceres-solver-$CERES_SOLVER_VERSION.tar.gz \
 RUN apt update \
       && apt install -y libboost-all-dev \
       && rm -rf /var/lib/apt/lists/*
+
+RUN apt update \
+      && apt install -y ros-humble-cv-bridge \
+      && rm -rf /var/lib/apt/lists/*

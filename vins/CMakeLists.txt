@@ -20,6 +20,12 @@ find_package(cv_bridge REQUIRED)
 find_package(camera_models REQUIRED)
 find_package(image_transport REQUIRED)
 
+find_package(PkgConfig) 
+pkg_search_module(GLIB REQUIRED glib-2.0) 
+pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
+pkg_check_modules(GST_APP REQUIRED gstreamer-app-1.0)
+pkg_check_modules(GST_VIDEO REQUIRED gstreamer-video-1.0)
+
 
 find_package(OpenCV REQUIRED)
 find_package(Ceres REQUIRED)
@@ -71,6 +77,8 @@ target_link_libraries(kitti_gps_test vins_lib)
 
 add_executable(camera src/camera.cpp)
 ament_target_dependencies(camera rclcpp rcpputils std_msgs visualization_msgs geometry_msgs nav_msgs tf2 tf2_ros cv_bridge camera_models image_transport)
+target_include_directories(camera PRIVATE ${GST_INCLUDE_DIRS})
+target_link_libraries(camera ${GST_LIBRARIES})
 
 # added from DEBUG
 

@@ -3,7 +3,11 @@
 
 // GStreamer headers
 #include <gst/gst.h>
-#include <gst/app/app.h>
+// #include <gst/app/app.h>
+
+// TODO: fix path
+#include "/usr/include/gstreamer-1.0/gst/gst.h"
+#include "/usr/include/gstreamer-1.0/gst/app/app.h"
 
 // A skeletal example
 class CamPublisherNode : public rclcpp::Node {

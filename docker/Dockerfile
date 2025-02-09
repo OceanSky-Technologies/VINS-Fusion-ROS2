@@ -1,44 +1,33 @@
-FROM ros:kinetic-perception
+FROM ros:humble
 
-ENV CERES_VERSION="1.12.0"
 ENV CATKIN_WS=/root/catkin_ws
 
-      # set up thread number for building
-RUN   apt-get update && apt-get install -y \
-      cmake \
-      libatlas-base-dev \
-      libeigen3-dev \
-      libgoogle-glog-dev \
-      libsuitesparse-dev \
-      python-catkin-tools \
-      ros-${ROS_DISTRO}-cv-bridge \
-      ros-${ROS_DISTRO}-image-transport \
-      ros-${ROS_DISTRO}-message-filters \
-      ros-${ROS_DISTRO}-tf && \
-      rm -rf /var/lib/apt/lists/* && \
-      # Build and install Ceres
-      git clone https://ceres-solver.googlesource.com/ceres-solver && \
-      cd ceres-solver && \
-      git checkout tags/${CERES_VERSION} && \
-      mkdir build && cd build && \
-      cmake .. && \
-      make -j 4 install && \
-      rm -rf ../../ceres-solver && \
-      mkdir -p $CATKIN_WS/src/VINS-Fusion/
+RUN apt update \
+      && apt install -y wget curl cmake pkg-config g++ gcc libeigen3-dev \
+      && rm -rf /var/lib/apt/lists/*
 
-# Copy VINS-Fusion
-COPY ./ $CATKIN_WS/src/VINS-Fusion/
-# use the following line if you only have this dockerfile
-# RUN git clone https://github.com/HKUST-Aerial-Robotics/VINS-Fusion.git
+# opencv with vulkan
+RUN apt update \
+      && apt install -y ffmpeg libavformat-dev libavcodec-dev libswscale-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev mesa-vulkan-drivers vulkan-tools \
+      && rm -rf /var/lib/apt/lists/*
 
-# Build VINS-Fusion
-WORKDIR $CATKIN_WS
-ENV TERM xterm
-ENV PYTHONIOENCODING UTF-8
-RUN catkin config \
-      --extend /opt/ros/$ROS_DISTRO \
-      --cmake-args \
-        -DCMAKE_BUILD_TYPE=Release && \
-    catkin build && \
-    sed -i '/exec "$@"/i \
-            source "/root/catkin_ws/devel/setup.bash"' /ros_entrypoint.sh
+ENV OPENCV_VERSION=4.11.0
+RUN wget https://github.com/opencv/opencv/archive/refs/tags/$OPENCV_VERSION.tar.gz \
+      && tar -xf $OPENCV_VERSION.tar.gz && rm $OPENCV_VERSION.tar.gz \
+      && cd opencv-$OPENCV_VERSION \
+      && mkdir build && cd build \
+      && cmake -DWITH_VULKAN=ON .. \
+      && cmake --build . -j $(nproc) --target install
+)
+
+RUN apt update \
+      && apt install -y libgoogle-glog-dev libgflags-dev libatlas-base-dev \
+      && rm -rf /var/lib/apt/lists/*
+
+ENV CERES_SOLVER_VERSION=2.2.0
+RUN wget http://ceres-solver.org/ceres-solver-$CERES_SOLVER_VERSION.tar.gz \
+      && tar -xf ceres-solver-$CERES_SOLVER_VERSION.tar.gz && rm ceres-solver-$CERES_SOLVER_VERSION.tar.gz \
+      && cd ceres-solver-$CERES_SOLVER_VERSION \
+      && mkdir build && cd build \
+      && cmake .. \
+      && cmake --build . -j $(nproc) --target install

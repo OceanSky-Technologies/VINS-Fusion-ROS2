@@ -1,48 +1,66 @@
 # VINS-Fusion
 
-## ROS2 version of VINS-Fusion.
+## RPI / ROS2 version of VINS-Fusion.
 
-This is a fork of https://github.com/zinuok/VINS-Fusion-ROS2 that updates it to ROS2 humble.
+This is a fork of https://github.com/zinuok/VINS-Fusion-ROS2.
 
-### Notices
-- code has been updated so that the vins package can be executed via ros2 run or ros2 launch
-- but Rviz config cannot be saved due to some issue.. still fixing
-- GPU enable/disable features also have been added: refer [EuRoC config](https://github.com/zinuok/VINS-Fusion-ROS2/blob/main/config/euroc/euroc_stereo_imu_config.yaml#L19-L21) (refered from [here](https://github.com/pjrambo/VINS-Fusion-gpu) and [here](https://github.com/pjrambo/VINS-Fusion-gpu/issues/33#issuecomment-1097642597))
-  - The GPU version has some CUDA library [dependencies: OpenCV with CUDA](https://github.com/zinuok/VINS-Fusion-ROS2/blob/main/vins/src/featureTracker/feature_tracker.h#L21-L23). Therefore, if it is a bothersome to you and only need the cpu version, please comment the following compiler macro at line 14 in the 'feature_tracker.h': .
+It runs on a Raspberry Pi 5 using the Global Shutter camera, BMI088 IMU and a RS485 CAN HAT.
+
+## Setup
+
+First, install docker on the RPI:
+
+```bash
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Then build the docker container for this repo:
+
+```bash
+cd docker
+make build
+```
+
+For running on a Jetson board open `feature_tracker.h` and uncomment
+
   ```bash
   #define GPU_MODE 1
   ```
 
-### Prerequisites
-- **System**
-  - Ubuntu 20.04
-  - ROS2 foxy
-- **Libraries**
-  - OpenCV 3.4.1 (with CUDA enabled option)
-  - OpenCV 3.4.1-contrib
-  - [Ceres Solver-2.1.0](http://ceres-solver.org/installation.html) (you can refer [here](https://github.com/zinuok/VINS-Fusion#-ceres-solver-1); just edit 1.14.0 to 2.1.0 for install.)
-  - [Eigen-3.3.9](https://github.com/zinuok/VINS-Fusion#-eigen-1)
+### run with loop fusion
 
-
-### sensor setup
-- camera: Intel realsense D435i
-- using following shell script, you can install realsense SDK with ROS2 package.
 ```bash
-chmod +x realsense_install.sh
-bash realsense_install.sh
-```
+docker run \
+  -it \
+  --rm \
+  --net=host \
+  -v $(git rev-parse --show-toplevel):/root/catkin_ws/src/VINS-Fusion/ \
+  ros:vins-fusion \
+  /bin/bash -c \
+  "cd /root/catkin_ws/; \
+  catkin config \
+          --env-cache \
+          --extend /opt/ros/$ROS_DISTRO \
+      --cmake-args \
+          -DCMAKE_BUILD_TYPE=Release; \
+      catkin build; \
+      source devel/setup.bash; \
+      rosrun loop_fusion loop_fusion_node ${CONFIG_IN_DOCKER} & \
+      rosrun vins kitti_odom_test ${CONFIG_IN_DOCKER} /root/kitti_dataset/"
 
 
-### build
-```bash
-cd $(PATH_TO_YOUR_ROS2_WS)/src
-git clone https://github.com/zinuok/VINS-Fusion-ROS2
-cd ..
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release && source ./install/setup.bash && source ./install/local_setup.bash
-```
-
-### run
-```bash
 ros2 launch vins vins_rviz.launch.xml &
 ros2 run vins vins_node ./config/euroc/euroc_mono_imu_config.yaml &
 ros2 run loop_fusion loop_fusion_node ./config/euroc/euroc_mono_imu_config.yaml &

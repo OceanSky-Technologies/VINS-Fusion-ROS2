@@ -1,7 +1,5 @@
 FROM ros:humble
 
-ENV CATKIN_WS=/root/workspace
-
 RUN apt update \
       && apt install -y wget curl cmake pkg-config g++ gcc libeigen3-dev \
       && rm -rf /var/lib/apt/lists/*

@@ -18,7 +18,6 @@ RUN wget https://github.com/opencv/opencv/archive/refs/tags/$OPENCV_VERSION.tar.
       && mkdir build && cd build \
       && cmake -DWITH_VULKAN=ON .. \
       && cmake --build . -j $(nproc) --target install
-)
 
 RUN apt update \
       && apt install -y libgoogle-glog-dev libgflags-dev libatlas-base-dev \

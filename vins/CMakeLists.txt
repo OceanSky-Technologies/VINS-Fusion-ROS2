@@ -69,6 +69,9 @@ add_executable(kitti_gps_test src/KITTIGPSTest.cpp)
 ament_target_dependencies(kitti_gps_test rclcpp rcpputils std_msgs visualization_msgs geometry_msgs nav_msgs tf2 tf2_ros cv_bridge camera_models image_transport)
 target_link_libraries(kitti_gps_test vins_lib) 
 
+add_executable(camera src/camera.cpp)
+ament_target_dependencies(camera rclcpp rcpputils std_msgs visualization_msgs geometry_msgs nav_msgs tf2 tf2_ros cv_bridge camera_models image_transport)
+
 # added from DEBUG
 
 # Install launch files

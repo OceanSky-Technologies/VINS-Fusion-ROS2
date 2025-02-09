@@ -75,7 +75,7 @@ docker run \
   source /opt/ros/humble/setup.bash; \
   colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release; \
   source ./install/setup.bash; \
-  export GSCAM_CONFIG="libcamerasrc ! queue ! video/x-raw,format=NV12 ! videoconvert ! autovideoconvert"; \
+  export GSCAM_CONFIG="libcamerasrc ! queue ! video/x-raw,format=NV12 ! videoconvert ! video/x-raw,format=RGB ! autovideosink"; \
   ros2 run gscam gscam_node; \
   ros2 run loop_fusion loop_fusion_node ${CONFIG_IN_DOCKER} & \
   ros2 run vins ros_node_test ${CONFIG_IN_DOCKER}"

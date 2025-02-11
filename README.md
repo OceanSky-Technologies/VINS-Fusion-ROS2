@@ -57,34 +57,53 @@ For running on a Jetson board that has CUDA support open `feature_tracker.h` and
 ## Build and run with loop fusion
 
 ```bash
+export DISPLAY=:0
+xhost +
+
 docker run \
   -it \
   --rm \
   --net=host \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v /dev:/dev \
+  -v /sys:/sys \
+  -v /run/udev:/run/udev:ro \
   -e DISPLAY=:0 \
   --privileged \
   -v $HOME/.Xauthority:/home/root/.Xauthority \
-  -v $(git rev-parse --show-toplevel)/../..:/root/workspace/ \
-  -v $(git rev-parse --show-toplevel)/camera.yaml:/root/.ros/camera_info/camera.yaml \
+  -v $(pwd):/root/workspace/ \
+  -v ./src/VINS-Fusion-ROS2-No-GPS/camera.yaml:/root/.ros/camera_info/camera.yaml \
   --name vins-fusion \
   ros:vins-fusion \
   /bin/bash -c \
   "cd /root/workspace/; \
-  source /opt/ros/humble/setup.bash; \
+  source /ros2_ws/install/setup.bash; \
   colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release; \
   source ./install/setup.bash; \
-  export GSCAM_CONFIG="libcamerasrc ! queue ! video/x-raw,format=NV12 ! videoconvert ! video/x-raw,format=RGB ! autovideosink"; \
-  ros2 run gscam gscam_node; \
-  ros2 run loop_fusion loop_fusion_node ${CONFIG_IN_DOCKER} & \
-  ros2 run vins ros_node_test ${CONFIG_IN_DOCKER}"
-
-ros2 launch vins vins_rviz.launch.xml &
-ros2 run vins vins_node ./config/euroc/euroc_mono_imu_config.yaml &
-ros2 run loop_fusion loop_fusion_node ./config/euroc/euroc_mono_imu_config.yaml &
+  ros2 run camera_publisher camera_node; \
+  export VINS_CONFIG=./src/VINS-Fusion-ROS2-No-GPS/config/euroc/euroc_mono_imu_config.yaml; \
+  ros2 run loop_fusion loop_fusion_node ${VINS_CONFIG} & \
+  ros2 run vins vins_node ${VINS_CONFIG}"
 
 # Use the "world" frame in rviz
+```
+
+The RPI Docker container doesn't come with rviz so you need to run it separately:
+
+```bash
+docker run \
+  -it \
+  --rm \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /dev:/dev \
+  -v /sys:/sys \
+  -v /run/udev:/run/udev:ro \
+  -e DISPLAY=:0 \
+  -v $HOME/.Xauthority:/home/root/.Xauthority \
+  --net=host \
+  osrf/ros:humble-desktop bash
+
+ros2 run rviz2 rviz2
 ```
 
 ## Camera setup
@@ -93,13 +112,13 @@ On the RPI 5 the Global Shutter camera hardware is no longer exposed as a "class
 Verify that the camera is working using gstreamer:
 
 ```bash
-gst-launch-1.0 libcamerasrc ! queue ! video/x-raw,format=NV12 ! videoconvert ! autovideosink
+gst-launch-1.0 libcamerasrc ! queue ! video/x-raw,format=RGBx,width=1456,height=1088 ! videoconvert ! autovideosink
 ```
 
 TODO: camera calibration
 
 ## play bag recorded at ROS1
-Unfortunately, you can't just play back the bag file recorded at ROS1. 
+Unfortunately, you can't just play back the bag file recorded at ROS1.
 This is because the filesystem structure for bag file has been changed significantly.
 The bag file at ROS2 needs the folder with some meta data for each bag file, which is done using following commands.
 - you have to install [this pkg](https://gitlab.com/ternaris/rosbags)
